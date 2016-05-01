@@ -1,4 +1,4 @@
-class SandwichesController < ApplicationController
+class Api::SandwichesController < ApplicationController
   def index
     sandwiches = Sandwich.all.limit(1000)
     render json: sandwiches
