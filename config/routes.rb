@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   namespace :api do
-    resources :sandwiches, only: [:index, :show]
+    resources :sandwiches, only: [:index, :show, :create]
   end
 
   # The priority is based upon order of creation: first created -> highest priority.
