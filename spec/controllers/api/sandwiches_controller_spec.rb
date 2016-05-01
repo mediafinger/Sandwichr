@@ -1,9 +1,13 @@
 require "rails_helper"
 
 describe Api::SandwichesController do
+  # these let! are evaluated before each test
+  #
   let!(:blt_sandwich)  { Sandwich.create!(name: "BLT", bread_type: "rye") }
   let!(:tuna_sandwich) { Sandwich.create!(name: "Tuna", bread_type: "rye") }
 
+  # these let are lazily evaluated
+  #
   let(:invalid_id) { 999999 }
   let(:sandwich) {
     sandwich = {}
@@ -11,15 +15,36 @@ describe Api::SandwichesController do
     sandwich
   }
 
+  # call these shared examples in any describe or context block:
+  # it_behaves_like "an success"
+  #
+  RSpec.shared_examples "an success" do
+    it "renders json with code 200" do
+      expect(response.content_type).to eq "application/json"
+      expect(response.code).to eq "200"
+    end
+  end
+
+  # call these shared examples in any describe or context block:
+  # it_behaves_like "an error handler"
+  #
+  RSpec.shared_examples "an error handler" do
+    it "renders json with code 404" do
+      expect(response.content_type).to eq "application/json"
+      expect(response.code).to eq "404"
+    end
+
+    it "renders an error message" do
+      expect(response.body).to include "Sandwich with id #{invalid_id} not found"
+    end
+  end
+
   # GET index
   #
   describe "#index" do
     before { get :index, format: :json }
 
-    it "renders json with code 200" do
-      expect(response.content_type).to eq "application/json"
-      expect(response.code).to eq "200"
-    end
+    it_behaves_like "an success"
 
     it "renders all sandwiches" do
       expect(response.body).to include blt_sandwich.name
@@ -33,10 +58,7 @@ describe Api::SandwichesController do
     context "with an existing id" do
       before { get :show, id: 1, format: :json }
 
-      it "renders json with code 200" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "200"
-      end
+      it_behaves_like "an success"
 
       it "renders the sandwich" do
         expect(response.body).to include blt_sandwich.name
@@ -47,14 +69,7 @@ describe Api::SandwichesController do
     context "with a non-existing id" do
       before { get :show, id: invalid_id, format: :json }
 
-      it "renders json with code 404" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "404"
-      end
-
-      it "renders an error message" do
-        expect(response.body).to include "Sandwich with id #{invalid_id} not found"
-      end
+      it_behaves_like "an error handler"
     end
   end
 
@@ -100,14 +115,7 @@ describe Api::SandwichesController do
     context "with a non-existing id" do
       before { put :update, id: invalid_id, name: "BACON", format: :json }
 
-      it "renders json with code 404" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "404"
-      end
-
-      it "renders an error message" do
-        expect(response.body).to include "Sandwich with id #{invalid_id} not found"
-      end
+      it_behaves_like "an error handler"
 
       it "does not save the Sandwich to the database" do
         expect(Sandwich.count).to eql 2
@@ -122,10 +130,7 @@ describe Api::SandwichesController do
       let(:new_name) { "BACON" }
       before { put :update, id: 1, sandwich: sandwich, format: :json }
 
-      it "renders json with code 200" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "200"
-      end
+      it_behaves_like "an success"
 
       it "renders the sandwich" do
         expect(response.body).to include "BACON"
@@ -154,14 +159,7 @@ describe Api::SandwichesController do
     context "with a non-existing id" do
       before { put :update, id: invalid_id, name: "BACON", format: :json }
 
-      it "renders json with code 404" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "404"
-      end
-
-      it "renders an error message" do
-        expect(response.body).to include "Sandwich with id #{invalid_id} not found"
-      end
+      it_behaves_like "an error handler"
     end
   end
 
@@ -171,10 +169,7 @@ describe Api::SandwichesController do
     context "with an existing id" do
       before { delete :destroy, id: 1, format: :json }
 
-      it "renders json with code 200" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "200"
-      end
+      it_behaves_like "an success"
 
       it "renders the sandwich" do
         expect(response.body).to include blt_sandwich.name
@@ -189,14 +184,7 @@ describe Api::SandwichesController do
     context "with a non-existing id" do
       before { put :update, id: invalid_id, name: "BACON", format: :json }
 
-      it "renders json with code 404" do
-        expect(response.content_type).to eq "application/json"
-        expect(response.code).to eq "404"
-      end
-
-      it "renders an error message" do
-        expect(response.body).to include "Sandwich with id #{invalid_id} not found"
-      end
+      it_behaves_like "an error handler"
 
       it "does not delete a random Sandwich from the database" do
         expect(Sandwich.count).to eql 2
