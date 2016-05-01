@@ -5,8 +5,13 @@ class Api::SandwichesController < ApplicationController
   end
 
   def show
-    sandwich = Sandwich.find(params[:id])
-    render json: sandwich
+    sandwich = Sandwich.find_by(id: params[:id])
+
+    if sandwich
+      render json: sandwich, status: :ok
+    else
+      render json: { errors: "Sandwich with id #{params[:id]} not found" }, status: 404
+    end
   end
 
   def create
