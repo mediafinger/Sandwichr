@@ -1,0 +1,32 @@
+body {
+  color: black;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 0.6em;
+}
+
+h1 {
+  color: green;
+  font-size: 4em;
+  font-weight: bold;
+}
+
+p {
+  color: red;
+  font-size: 2em;
+}
+
+hr {
+  margin-bottom: 2em;
+  margin-top: 2em;
+}
+
+.tutorial {
+  font-family: sans-serif;
+  font-size: 1.5em;
+  line-height: 1.7em;
+  text-align: center;
+
+  hr {
+    width: 30%;
+  }
+}
